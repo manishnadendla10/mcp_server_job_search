@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "job-search": {
+      "command": "C:\\Users\\manis\\.claude\\JobSearch_Project\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\Users\\manis\\.claude\\JobSearch_Project\\server.py"]
+    }
+  }
+}

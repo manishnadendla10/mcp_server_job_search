@@ -1,0 +1,90 @@
+# Target companies. `source` picks the adapter; `board` is the company's slug
+# on that job board (the part of the URL after the domain).
+# Run `python validate_companies.py` after editing to confirm every board works.
+#
+# Optional per company:
+#   h1b_names: ["EXACT EMPLOYER NAME AS IN USCIS DATA", ...]
+# Only needed when the brand differs from the legal entity (Instacart = MAPLEBEAR INC)
+# or automatic matching picks up the wrong entities. Replaces automatic matching entirely.
+# Check matches with: python h1b.py report
+
+companies:
+  - { name: Stripe,      source: greenhouse, board: stripe }
+  - { name: Airbnb,      source: greenhouse, board: airbnb }
+  - { name: Databricks,  source: greenhouse, board: databricks }
+  - { name: Cloudflare,  source: greenhouse, board: cloudflare }
+  - { name: Datadog,     source: greenhouse, board: datadog }
+  - { name: Robinhood,   source: greenhouse, board: robinhood }
+  - { name: Coinbase,    source: greenhouse, board: coinbase }
+  - { name: Discord,     source: greenhouse, board: discord }
+  - { name: Figma,       source: greenhouse, board: figma }
+  - { name: GitLab,      source: greenhouse, board: gitlab }
+  - { name: MongoDB,     source: greenhouse, board: mongodb }
+  - { name: Elastic,     source: greenhouse, board: elastic, h1b_names: [ELASTICSEARCH INC] }
+  - { name: Okta,        source: greenhouse, board: okta }
+  - { name: Twilio,      source: greenhouse, board: twilio }
+  - { name: Dropbox,     source: greenhouse, board: dropbox }
+  - { name: Instacart,   source: greenhouse, board: instacart, h1b_names: [MAPLEBEAR INC] }
+  - { name: Pinterest,   source: greenhouse, board: pinterest }
+  - { name: Reddit,      source: greenhouse, board: reddit }
+  - { name: Lyft,        source: greenhouse, board: lyft }
+  - { name: Toast,       source: greenhouse, board: toast }
+  - { name: Brex,        source: greenhouse, board: brex }
+  - { name: Samsara,     source: greenhouse, board: samsara }
+  - { name: Affirm,      source: greenhouse, board: affirm }
+  - { name: Gusto,       source: greenhouse, board: gusto }
+  - { name: Asana,       source: greenhouse, board: asana }
+
+  # --- Texas / DFW presence (found by probing boards for TX locations, Nov 2026) ---
+  - { name: Carvana,           source: greenhouse, board: carvana }
+  - { name: DoorDash,          source: greenhouse, board: doordashusa }
+  - { name: Apptronik,         source: greenhouse, board: apptronik }
+  - { name: Tecovas,           source: greenhouse, board: tecovas }
+  - { name: Fivetran,          source: greenhouse, board: fivetran }
+  - { name: HighRadius,        source: greenhouse, board: highradius }
+  - { name: Flexport,          source: greenhouse, board: flexport }
+  - { name: LogicMonitor,      source: greenhouse, board: logicmonitor }
+  - { name: Lucid Motors,      source: greenhouse, board: lucidmotors, h1b_names: [LUCID USA INC, LUCID GROUP USA INC] }
+  - { name: Roku,              source: greenhouse, board: roku }
+  - { name: SoFi,              source: greenhouse, board: sofi, h1b_names: [SOCIAL FINANCE LLC, SOCIAL FINANCE INC, SOFI BANK N A, SOFI BANK NATIONAL ASSOCIATION] }
+  - { name: Toyota Connected,  source: greenhouse, board: toyotaconnected }
+  - { name: Scale AI,          source: greenhouse, board: scaleai }
+  - { name: Chime,             source: greenhouse, board: chime }
+  - { name: Arrive Logistics,  source: lever,      board: arrivelogistics }
+  - { name: GoodLeap,          source: lever,      board: goodleap }
+  - { name: Match Group,       source: lever,      board: matchgroup }
+  - { name: Bazaarvoice,       source: lever,      board: bazaarvoice }
+  - { name: Everlywell,        source: lever,      board: everlywell }
+  - { name: Saronic,           source: ashby,      board: saronic }
+  - { name: Zello,             source: ashby,      board: zello }
+  - { name: Snowflake,         source: ashby,      board: snowflake }
+
+  # --- Workday (big DFW employers) ---
+  # board = "<host>/<site>" from the career-site URL. Workday sites are huge, so only
+  # jobs in matching location facets are fetched (default: DFW + Texas cities + Remote;
+  # see DEFAULT_LOCATIONS in sources/workday.py). Override per company with
+  #   locations: [Plano, Richardson]
+  - { name: Capital One,        source: workday, board: capitalone.wd12.myworkdayjobs.com/Capital_One }
+  - { name: Bank of America,    source: workday, board: ghr.wd1.myworkdayjobs.com/Lateral-US }
+  - name: Citi
+    source: workday
+    board: citi.wd5.myworkdayjobs.com/2
+    h1b_names: [CITIBANK N A, CITIGROUP GLOBAL MARKETS INC, CITICORP CREDIT SERVICES INC USA, CITIGROUP TECHNOLOGY INC]
+  - { name: AT&T,               source: workday, board: att.wd1.myworkdayjobs.com/ATTGeneral }
+  - { name: Salesforce,         source: workday, board: salesforce.wd12.myworkdayjobs.com/External_Career_Site }
+  - { name: Wells Fargo,        source: workday, board: wf.wd1.myworkdayjobs.com/WellsFargoJobs }
+  - { name: McKesson,           source: workday, board: mckesson.wd3.myworkdayjobs.com/External_Careers }
+  - { name: Sabre,              source: workday, board: sabre.wd1.myworkdayjobs.com/SabreJobs }
+  - { name: Southwest Airlines, source: workday, board: swa.wd1.myworkdayjobs.com/external }
+  - name: Fidelity
+    source: workday
+    board: fmr.wd1.myworkdayjobs.com/FidelityCareers
+    # Without this, "fidelity national financial" (a different company) would prefix-match.
+    h1b_names: [FIDELITY INVESTMENTS, FIDELITY TECHNOLOGY GROUP LLC, FMR LLC, FIDELITY BROKERAGE SERVICES LLC,
+                FIDELITY WORKPLACE INVESTING LLC, FIDELITY MANAGEMENT AND RESEARCH COMPANY LLC]
+  - { name: Kimberly-Clark,     source: workday, board: kimberlyclark.wd1.myworkdayjobs.com/GLOBAL }
+  - { name: NVIDIA,             source: workday, board: nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite }
+  - { name: PayPal,             source: workday, board: paypal.wd1.myworkdayjobs.com/jobs }
+  - { name: CrowdStrike,        source: workday, board: crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers }
+  - { name: Mastercard,         source: workday, board: mastercard.wd1.myworkdayjobs.com/CorporateCareers }
+  - { name: Intel,              source: workday, board: intel.wd1.myworkdayjobs.com/External }

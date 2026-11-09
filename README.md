@@ -1,5 +1,9 @@
 # job-search-mcp
 
+[![CI](https://github.com/manishnadendla10/mcp_server_job_search/actions/workflows/ci.yml/badge.svg)](https://github.com/manishnadendla10/mcp_server_job_search/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)
+
 An [MCP](https://modelcontextprotocol.io) server that lets an AI assistant (Claude, or any MCP client) search company job boards, track your applications, and check employers' H-1B sponsorship history.
 
 Ask in plain English:
@@ -100,7 +104,8 @@ Rules 3 and 4 come from false positives found in the real data. Plain prefix mat
 Requires Python 3.11+.
 
 ```bash
-git clone <this repo> && cd job-search-mcp
+git clone https://github.com/manishnadendla10/mcp_server_job_search.git
+cd mcp_server_job_search
 python -m venv .venv
 .venv\Scripts\activate          # Windows
 # source .venv/bin/activate     # macOS / Linux
@@ -169,3 +174,7 @@ Adapters are tested against mocked payloads that copy each API's real quirks. Ca
 - **Workday post dates are approximate.** The listing only says "Posted 3 Days Ago", and anything older shows as "30+ Days Ago".
 - **Coverage is only what's in `companies.yaml`.** Companies on other systems (Oracle, iCIMS, Taleo, SuccessFactors) aren't supported yet.
 - **H-1B counts aren't a hiring promise.** They count USCIS first decisions per fiscal year for the matched legal entities: whether a company has sponsored, not whether a specific team will.
+
+## License
+
+[MIT](LICENSE) © 2026 Manish Nadendla

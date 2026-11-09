@@ -48,6 +48,15 @@ def _stale_boards(conn, companies: list[dict], force: bool) -> list[dict]:
     return [c for c in companies if (c["source"], c["board"]) not in fresh]
 
 
+def stale_count(force: bool = False) -> int:
+    """How many boards a refresh would fetch right now."""
+    conn = db.connect()
+    try:
+        return len(_stale_boards(conn, load_companies(), force))
+    finally:
+        conn.close()
+
+
 def _store_board(conn, source: str, board: str, jobs: list[Job]) -> None:
     """Replace a board's jobs atomically, so closed postings disappear."""
     with conn:

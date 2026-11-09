@@ -25,7 +25,7 @@ log = logging.getLogger("job-search-mcp")
 mcp = MCPServer(
     name="job-search",
     instructions=(
-        "Search open roles across company job boards (Greenhouse, Lever, Ashby), "
+        "Search open roles across company job boards (Greenhouse, Lever, Ashby, Workday), "
         "track job applications, and check H-1B sponsorship history. "
         "Use search_jobs first, then get_job_details for a specific job's full description."
     ),

@@ -15,6 +15,8 @@ Ask in plain English:
 
 The server does the work behind the scenes: it fetches **63 companies across 4 job platforms** (about 14,000 open roles), filters them in SQLite, and joins them against **307,000 USCIS H-1B records** (FY2022–2026).
 
+**No AI needed:** everything is also available from the command line (see [Command-line use](#command-line-use)). Both interfaces call the same core modules.
+
 ---
 
 ## Tools
@@ -32,15 +34,44 @@ The server does the work behind the scenes: it fetches **63 companies across 4 j
 
 **Prompt:** `tailor_resume(job_id, resume?)` pulls in the job description and your resume (pasted, or from `data/resume.md`) and asks for truthful, targeted bullet rewrites and a gap analysis.
 
+## Command-line use
+
+```bash
+python jobsearch.py search backend cloud -l Dallas Plano --days 7 --sponsors-only --min-h1b 100
+python jobsearch.py show workday:swa:R-2026-72880
+python jobsearch.py save workday:swa:R-2026-72880 --note "referral from Sam"
+python jobsearch.py update 1 --status applied --note "applied on site"
+python jobsearch.py list --status applied interviewing
+python jobsearch.py followups --days 7
+python jobsearch.py sponsor "Southwest Airlines"
+python jobsearch.py refresh --force
+```
+
+```
+POSTED      COMPANY           TITLE                                  LOCATION                    H-1B 5Y  ID
+----------  ----------------  -------------------------------------  --------------------------  -------  ------------------------
+2026-11-09  Wells Fargo       Software Engineer                      IRVING, TX; Texas (+ othe…  2,594    workday:wf:R-586193
+2026-11-09  Citi              Data Platform Engineer, Cybersecurity  Irving Texas United States  6,763    workday:citi:26997079
+2026-11-09  Southwest Airli…  Tech Lead Software Engineer            TX-Dallas; Texas            478      workday:swa:R-2026-72880
+
+24 matches (showing 3; use --limit for more)
+```
+
+Add `--json` to `search`, `show`, `list`, `followups` or `sponsor` to get JSON for scripts, and `-h` to any command for its options. `search` refreshes stale boards first (skip that with `--no-refresh`).
+
 ## Architecture
 
 ```mermaid
 flowchart LR
     Claude["AI assistant<br/>(MCP client)"] <-->|stdio| Server["server.py<br/>MCP tools + prompt"]
+    Human["You, in a terminal"] --> CLI["jobsearch.py<br/>command-line interface"]
 
     Server --> Catalog["catalog.py<br/>refresh · cache · search"]
     Server --> Tracker["tracker.py<br/>applications + events"]
     Server --> H1B["h1b.py<br/>loader + name matching"]
+    CLI --> Catalog
+    CLI --> Tracker
+    CLI --> H1B
 
     Catalog --> Adapters
     subgraph Adapters["sources/ (adapter pattern)"]
@@ -58,6 +89,7 @@ flowchart LR
 
 ```
 server.py              MCP tool + prompt definitions (thin layer)
+jobsearch.py           command-line interface over the same core (no AI needed)
 catalog.py             concurrent fetch, retry, 6h cache, SQL search
 tracker.py             application tracker with full event history
 h1b.py                 USCIS CSV loader + employer name resolution (CLI too)
@@ -67,7 +99,7 @@ sources/
   greenhouse.py  lever.py  ashby.py  workday.py
 companies.yaml         target companies, board ids, optional H-1B name overrides
 validate_companies.py  checks every board in companies.yaml against the live API
-tests/                 54 tests, all HTTP mocked with respx
+tests/                 63 tests, all HTTP mocked with respx
 ```
 
 ## Design notes
@@ -163,7 +195,7 @@ Workday entries fetch only DFW/Texas/Remote locations by default. Override per c
 ## Tests
 
 ```bash
-python -m pytest -q     # 54 tests, ~3s, no network
+python -m pytest -q     # 63 tests, ~3s, no network
 ```
 
 Adapters are tested against mocked payloads that copy each API's real quirks. Catalog tests cover retries, failure isolation, cache TTL and closed postings. Tracker and H-1B tests use a temporary SQLite file and fixed clock times. CI runs on Ubuntu and Windows with Python 3.11 and 3.13.

@@ -164,7 +164,9 @@ class WorkdaySource(JobSource):
         native = bullets[0] if bullets and len(bullets[0]) <= 24 else path.rsplit("_", 1)[-1]
         title = p.get("title") or ""
         return Job(
-            id=self.make_id(board, native),
+            # Short id: "workday:capitalone:R1005333", not the full host/site board string,
+            # so people can type it and it costs less context for the AI.
+            id=self.make_id(host.split(".")[0], native),
             source=self.name,
             board=board,
             company=company,

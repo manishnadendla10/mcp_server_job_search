@@ -143,9 +143,10 @@ async def test_workday_queries_only_target_locations_and_paginates():
     route = respx.post(WD_JOBS).mock(side_effect=workday_api)
     jobs = {j.id: j for j in await fetch("workday", WD_BOARD)}
     assert len(jobs) == 45                                # job 0 found under both cities, deduped
-    multi = jobs[f"workday:{WD_BOARD}:R0"]
+    multi = jobs["workday:acme:R0"]                      # short id: tenant, not host/site
+    assert multi.board == WD_BOARD
     assert multi.location == "Dallas, TX; Plano, TX (+ other locations; 2 Locations total)"
-    assert jobs[f"workday:{WD_BOARD}:R1"].location == "Plano, TX"
+    assert jobs["workday:acme:R1"].location == "Plano, TX"
     assert multi.url == "https://acme.wd1.myworkdayjobs.com/Careers/job/Plano-TX/Engineer-0_R0"
     assert multi.description is None                      # fetched lazily
     # 1 facet discovery + Dallas (1 page) + Plano (3 pages)
@@ -156,7 +157,7 @@ async def test_workday_queries_only_target_locations_and_paginates():
 async def test_workday_respects_per_company_locations():
     respx.post(WD_JOBS).mock(side_effect=workday_api)
     jobs = await fetch("workday", WD_BOARD, options={"locations": ["Dallas"]})
-    assert [j.id for j in jobs] == [f"workday:{WD_BOARD}:R0"]
+    assert [j.id for j in jobs] == ["workday:acme:R0"]
 
 
 @respx.mock
